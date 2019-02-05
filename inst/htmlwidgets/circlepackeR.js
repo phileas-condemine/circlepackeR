@@ -13,7 +13,21 @@ HTMLWidgets.widget({
   },
 
   renderValue: function(el, x, instance) {
-
+    format = d3.format(",d");  
+    width = 932;
+    height = width;
+    color = d3.scaleLinear()
+    .domain([0, 5])
+    .range(["hsl(152,80%,80%)", "hsl(228,30%,40%)"])
+    .interpolate(d3.interpolateHcl);
+    
+    pack = data => d3.pack()
+    .size([width, height])
+    .padding(3)
+  (d3.hierarchy(data)
+    .sum(d => d.size)
+    .sort((a, b) => b.value - a.value));
+    
   const root = pack(x.data);
   let focus = root;
   let view;
