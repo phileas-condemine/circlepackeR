@@ -17,5 +17,5 @@ dependencies:
   stylesheet: ./style.css
 - name : observablehq_stdlib
   version: 2.0.8
-  src: "htmlwidgetsFlib/@observablehq/stdlib"
+  src: "htmlwidgetsFlib/@observablehq/stdlib/dist"
   script: stdlib.js
