@@ -14,88 +14,74 @@ HTMLWidgets.widget({
 
   renderValue: function(el, x, instance) {
 
-    // remove previous in case of dynamic/Shiny
-    d3.select(el).selectAll('*').remove();
+  const root = pack(x.data);
+  let focus = root;
+  let view;
 
-    // much of this code is based on this example by Mike Bostock
-    //   https://gist.github.com/mbostock/7607535
+  const svg = d3.select(DOM.svg(width, height))
+      .attr("viewBox", `-${width / 2} -${height / 2} ${width} ${height}`)
+      .style("display", "block")
+      .style("margin", "0 -14px")
+      .style("width", "calc(100% + 28px)")
+      .style("height", "auto")
+      .style("background", color(0))
+      .style("cursor", "pointer")
+      .on("click", () => zoom(root));
 
-    var margin = 20,
-    // use getBoundingClientRect since width and height
-    //  might not be in pixels
-    diameter = Math.min(el.getBoundingClientRect().width,
-                        el.getBoundingClientRect().height);
+  const node = svg.append("g")
+    .selectAll("circle")
+    .data(root.descendants().slice(1))
+    .enter().append("circle")
+      .attr("fill", d => d.children ? color(d.depth) : "white")
+      .attr("pointer-events", d => !d.children ? "none" : null)
+      .on("mouseover", function() { d3.select(this).attr("stroke", "#000"); })
+      .on("mouseout", function() { d3.select(this).attr("stroke", null); })
+      .on("click", d => focus !== d && (zoom(d), d3.event.stopPropagation()));
 
-    var color = d3.scaleLinear()
-        .domain([-1, 5])
-        .range([x.options.color_min, x.options.color_max])
-        .interpolate(d3.interpolateHcl);
+  const label = svg.append("g")
+      .style("font", "10px sans-serif")
+      .attr("pointer-events", "none")
+      .attr("text-anchor", "middle")
+    .selectAll("text")
+    .data(root.descendants())
+    .enter().append("text")
+      .style("fill-opacity", d => d.parent === root ? 1 : 0)
+      .style("display", d => d.parent === root ? "inline" : "none")
+      .text(d => d.data.name);
 
-    var pack = d3.pack()
-        .padding(2)
-        .size([diameter - margin, diameter - margin])
-        .value(function(d) { return d[x.options.size]; })
+  zoomTo([root.x, root.y, root.r * 2]);
 
-    var svg = d3.select(el).append("svg")
-        .attr("width", diameter)
-        .attr("height", diameter)
-      .append("g")
-        .attr("transform", "translate(" + diameter / 2 + "," + diameter / 2 + ")");
+  function zoomTo(v) {
+    const k = width / v[2];
 
-    function createViz(root) {
-      var focus = root,
-          nodes = pack.nodes(root),
-          view;
+    view = v;
 
-      var circle = svg.selectAll("circle")
-          .data(nodes)
-        .enter().append("circle")
-          .attr("class", function(d) { return d.parent ? d.children ? "node" : "node node--leaf" : "node node--root"; })
-          .style("fill", function(d) { return d.children ? color(d.depth) : null; })
-          .on("click", function(d) { if (focus !== d) zoom(d), d3.event.stopPropagation(); });
+    label.attr("transform", d => `translate(${(d.x - v[0]) * k},${(d.y - v[1]) * k})`);
+    node.attr("transform", d => `translate(${(d.x - v[0]) * k},${(d.y - v[1]) * k})`);
+    node.attr("r", d => d.r * k);
+  }
 
-      var text = svg.selectAll("text")
-          .data(nodes)
-        .enter().append("text")
-          .attr("class", "label")
-          .style("fill-opacity", function(d) { return d.parent === root ? 1 : 0; })
-          .style("display", function(d) { return d.parent === root ? null : "none"; })
-          .text(function(d) { return d.name; });
+  function zoom(d) {
+    const focus0 = focus;
 
-      var node = svg.selectAll("circle,text");
+    focus = d;
 
-      d3.select(el)
-          .on("click", function() { zoom(root); });
+    const transition = svg.transition()
+        .duration(d3.event.altKey ? 7500 : 750)
+        .tween("zoom", d => {
+          const i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2]);
+          return t => zoomTo(i(t));
+        });
 
-      zoomTo([root.x, root.y, root.r * 2 + margin]);
+    label
+      .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
+      .transition(transition)
+        .style("fill-opacity", d => d.parent === focus ? 1 : 0)
+        .on("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
+        .on("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
+  }
 
-      function zoom(d) {
-        var focus0 = focus; focus = d;
-
-        var transition = d3.transition()
-            .duration(d3.event.altKey ? 7500 : 750)
-            .tween("zoom", function(d) {
-              var i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2 + margin]);
-              return function(t) { zoomTo(i(t)); };
-            });
-
-        transition.selectAll("text")
-          .filter(function(d) { return d.parent === focus || this.style.display === "inline"; })
-            .style("fill-opacity", function(d) { return d.parent === focus ? 1 : 0; })
-            .each("start", function(d) { if (d.parent === focus) this.style.display = "inline"; })
-            .each("end", function(d) { if (d.parent !== focus) this.style.display = "none"; });
-      }
-
-      function zoomTo(v) {
-        var k = diameter / v[2]; view = v;
-        node.attr("transform", function(d) { return "translate(" + (d.x - v[0]) * k + "," + (d.y - v[1]) * k + ")"; });
-        circle.attr("r", function(d) { return d.r * k; });
-      }
-    }
-
-    createViz(x.data)
-
-    d3.select(self.frameElement).style("height", diameter + "px");
+  return svg.node();
 
   },
 
