@@ -1,8 +1,12 @@
 dependencies:
 - name: d3
-  version: 4.5.0
-  src: "htmlwidgets/lib/d3-4.5.0"
+  version: 5.8.2
+  src: "htmlwidgets/lib/d3-5.8.2"
   script: d3.min.js
+- name: d3-require
+  version: 1.2.1
+  src: "htmlwidgets/lib/d3-require"
+  script: d3-require.min.js
 - name: circlepackeR
   version: 0.1
   src: htmlwidgets/lib/circlepackeR
