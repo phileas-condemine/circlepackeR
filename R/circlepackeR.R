@@ -98,7 +98,7 @@ circlepackeR <- function(data, size = "size", color_min = "hsl(152,80%,80%)",
   ,'src/generators/worker.js'
   ,'src/constant.js')
 
-  dep=htmlDependency("observablehq_stdlib","2.0.8","htmlwidgets/lib/observablehq/stdlib/",
+  dep=htmltools::htmlDependency("observablehq_stdlib","2.0.8","htmlwidgets/lib/observablehq/stdlib/",
                  script= libs,package = "circlepackeR")
 
   htmlwidgets::createWidget(
