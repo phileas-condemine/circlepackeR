@@ -20,4 +20,4 @@ dependencies:
   src: htmlwidgets/lib/@observablehq/stdlib/dist
   script:
     - stdlib.js
-    - ../src/dom/svg.js
+    - htmlwidgets/lib/@observablehq/stdlib/src/dom/svg.js
