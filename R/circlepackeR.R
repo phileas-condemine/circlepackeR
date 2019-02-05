@@ -53,12 +53,16 @@ circlepackeR <- function(data, size = "size", color_min = "hsl(152,80%,80%)",
   )
 
   # create widget
+  dep=htmlDependency("observablehq_stdlib","2.0.8","htmlwidgets/lib/observablehq/stdlib/",
+                 script= libs,package = "circlepackeR")
+
   htmlwidgets::createWidget(
     name = 'circlepackeR',
     x,
     width = width,
     height = height,
-    package = 'circlepackeR'
+    package = 'circlepackeR',
+    dependencies=dep
   )
 }
 
