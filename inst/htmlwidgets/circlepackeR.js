@@ -31,7 +31,7 @@ HTMLWidgets.widget({
         .range([x.options.color_min, x.options.color_max])
         .interpolate(d3.interpolateHcl);
 
-    var pack = d3.layout.pack()
+    var pack = d3.pack()
         .padding(2)
         .size([diameter - margin, diameter - margin])
         .value(function(d) { return d[x.options.size]; })
