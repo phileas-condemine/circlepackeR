@@ -26,7 +26,7 @@ HTMLWidgets.widget({
     diameter = Math.min(el.getBoundingClientRect().width,
                         el.getBoundingClientRect().height);
 
-    var color = d3.scale.linear()
+    var color = d3.scaleLinear()
         .domain([-1, 5])
         .range([x.options.color_min, x.options.color_max])
         .interpolate(d3.interpolateHcl);
