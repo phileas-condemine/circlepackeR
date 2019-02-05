@@ -15,7 +15,7 @@ dependencies:
   version: 0.1
   src: htmlwidgets/lib/circlepackeR
   stylesheet: ./style.css
-- name : @observablehq/stdlib
+- name : observablehq_stdlib
   version: 2.0.8
-  src: htmlwidgetsFlib/@observablehq/stdlib
+  src: "htmlwidgetsFlib/@observablehq/stdlib"
   script: stdlib.js
