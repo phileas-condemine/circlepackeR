@@ -17,7 +17,7 @@ dependencies:
   stylesheet: ./style.css
 - name : observablehq_stdlib
   version: 2.0.8
-  src: htmlwidgets/lib/@observablehq/stdlib
+  src: htmlwidgets/lib/@observablehq/stdlib/dist
   script:
-    - dist/stdlib.js
-    - src/dom/svg.js
+    - stdlib.js
+    - ../src/dom/svg.js
