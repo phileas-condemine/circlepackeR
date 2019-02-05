@@ -13,6 +13,7 @@ HTMLWidgets.widget({
   },
 
   renderValue: function(el, x, instance) {
+    d3 = require("d3@5")
     format = d3.format(",d");  
     width = 932;
     height = width;
