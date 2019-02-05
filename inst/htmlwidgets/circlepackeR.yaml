@@ -19,8 +19,11 @@ dependencies:
   version: 2.0.8
   src: "htmlwidgets/lib/@observablehq/stdlib"
   script:
-    - LICENSE
     - dist/stdlib.js
+- name : observablehq_stdlib
+  version: 2.0.8
+  src: "htmlwidgets/lib/@observablehq/stdlib"
+  script:
     - src/dom/canvas.js
     - src/dom/context2d.js
     - src/dom/download.js
